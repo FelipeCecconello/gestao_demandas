@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preencher Alunos Pendentes</title>
+</head>
+<body>
+    <h1>Preencher Alunos Pendentes</h1>
+
+    <form method="post">
+        {% load custom_tags %}
+        {% csrf_token %}
+        <table>
+            {% for disciplina_semestre in disciplinas_semestre %}
+            <tr>
+                <td>{{ disciplina_semestre.disciplina.nome }}</td>
+                <td>
+                    {{ forms|get_item:disciplina_semestre.pk }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Salvar</button>
+    </form>
+
+    <a href="{% url 'lista_semestres' curso_codigo %}">Voltar para a lista de semestres</a>
+</body>
+</html>

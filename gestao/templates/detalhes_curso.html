@@ -1,0 +1,20 @@
+{% extends 'seu_template.html' %}
+
+{% block content %}
+    <h2>Detalhes do Curso</h2>
+    <p>Código do Curso: {{ curso.codigo }}</p>
+    <p>Nome do Curso: {{ curso.nome }}</p>
+
+    <h3>Lista de Alunos</h3>
+    <ul>
+        {% for aluno in alunos %}
+            <li>{{ aluno.matricula }} - {{ aluno.nome }} ({{ aluno.email }})</li>
+        {% empty %}
+            <li>Nenhum aluno cadastrado para este curso.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'inserir_alunos_curso'  curso.codigo %}">Inserir Alunos</a>
+    <a href="{% url 'lista_semestres'  curso.codigo %}">Semestres</a>
+    <a href="{% url 'lista_cursos' %}">Voltar para a lista de cursos</a>
+{% endblock %}

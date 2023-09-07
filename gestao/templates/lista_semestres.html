@@ -1,0 +1,18 @@
+{% extends 'seu_template.html' %}
+
+{% block content %}
+    <h2>Lista de Semestres</h2>
+    <ul>
+        {% for semestre in semestres %}
+            <li>
+                <a href="{% url 'preencher_disciplinas' curso.codigo semestre.codigo %}">
+                    {{ semestre.numero }}º Semestre - {{ semestre.curso }}
+                </a>
+            </li>
+        {% empty %}
+            <li>Nenhum semestre cadastrado.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'criar_semestre' curso.codigo%}">Criar Novo Semestre</a>
+    <a href="{% url 'detalhes_curso' curso.codigo%}">Detalhes do Curso</a>
+{% endblock %}

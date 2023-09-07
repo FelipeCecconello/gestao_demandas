@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preencher Disciplinas do Semestre</title>
+</head>
+<body>
+    <h1>Preencher Disciplinas do Semestre</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Salvar</button>
+    </form>
+
+    <a href="{% url 'lista_semestres' curso.codigo %}">Voltar para a lista de semestres</a>
+    <a href="{% url 'preencher_alunos_pendentes' curso.codigo semestre.codigo %}">Preencher alunos pendentes</a>
+</body>
+</html>

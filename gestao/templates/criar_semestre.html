@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Criar Semestre</title>
+</head>
+<body>
+    <h1>Criar Semestre</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.numero.label_tag }} {{ form.numero }}
+        <button type="submit">Salvar</button>
+    </form>
+
+    <a href="{% url 'lista_semestres' curso.codigo %}">Voltar para a lista de semestres</a>
+</body>
+</html>
