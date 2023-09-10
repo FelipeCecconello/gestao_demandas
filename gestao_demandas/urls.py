@@ -26,5 +26,6 @@ urlpatterns = [
     path('curso/listar/', ListaCursosView.as_view(), name='lista_cursos'),
     path('curso/<str:curso_codigo>/', DetalhesCursoView.as_view(), name='detalhes_curso'),
     path('curso/<str:curso_codigo>/inserir_alunos/', InserirAlunosCursoView.as_view(), name='inserir_alunos_curso'),
+    path('curso/<str:curso_codigo>/inserir_disciplinas/', InserirDisciplinasCursoView.as_view(), name='inserir_disciplinas_curso'),
     path('curso/<str:curso_codigo>/semestres/<str:semestre_codigo>/preencher_alunos_pendentes/', PreencherAlunosPendentesView.as_view(), name='preencher_alunos_pendentes'),
 ]

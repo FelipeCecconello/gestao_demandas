@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inserir Alunos em Curso</title>
+</head>
+<body>
+    <h1>Inserir/Modificar Disciplinas em Curso - {{ curso.nome }}</h1>
+
+    <h2>Inserir/Modificar Lista de Disciplinas:</h2>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="lista_disciplinas" rows="10" cols="50">{{ lista_disciplinas }}</textarea>
+        <br>
+        <input type="submit" value="Salvar">
+    </form>
+
+    <a href="{% url 'detalhes_curso' curso.codigo %}">Voltar para os detalhes do curso</a>
+</body>
+</html>

@@ -161,3 +161,25 @@ class InserirAlunosCursoView(View):
                 )
 
         return redirect('detalhes_curso', curso_codigo=curso.codigo)
+    
+class InserirDisciplinasCursoView(View):
+    template_name = 'inserir_disciplinas_curso.html'
+
+    def get(self, request, curso_codigo):
+        curso = Curso.objects.get(codigo=curso_codigo)
+        return render(request, self.template_name, {'curso': curso})
+
+    def post(self, request, curso_codigo):
+        curso = Curso.objects.get(codigo=curso_codigo)
+        lista_disciplinas = request.POST.get('lista_disciplinas')
+
+        if lista_disciplinas:
+            # Primeiro, exclua todos os alunos associados a este curso
+            Disciplina.objects.filter(curso=curso).delete()
+
+            # Processar a lista de alunos e criar registros de Aluno com base na lista
+            for linha in lista_disciplinas.split('\n'):
+                if linha:
+                    Disciplina.objects.create(nome=linha, curso=curso)
+
+        return redirect('detalhes_curso', curso_codigo=curso.codigo)
