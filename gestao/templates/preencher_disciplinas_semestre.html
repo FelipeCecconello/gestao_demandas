@@ -15,5 +15,8 @@
 
     <a href="{% url 'lista_semestres' curso.codigo %}">Voltar para a lista de semestres</a>
     <a href="{% url 'preencher_alunos_pendentes' curso.codigo semestre.codigo %}">Preencher alunos pendentes</a>
+    <a href="{% url 'preencher_alunos_matriculados' curso.codigo semestre.codigo %}">Preencher alunos matriculados</a>
+    <a href="{% url 'preencher_turmas' curso.codigo semestre.codigo %}">Preencher turmas</a>
+    <a href="{% url 'escolher_professores' curso.codigo semestre.codigo %}">Preencher professores para turmas</a>
 </body>
 </html>

@@ -27,5 +27,9 @@ urlpatterns = [
     path('curso/<str:curso_codigo>/', DetalhesCursoView.as_view(), name='detalhes_curso'),
     path('curso/<str:curso_codigo>/inserir_alunos/', InserirAlunosCursoView.as_view(), name='inserir_alunos_curso'),
     path('curso/<str:curso_codigo>/inserir_disciplinas/', InserirDisciplinasCursoView.as_view(), name='inserir_disciplinas_curso'),
+    path('curso/<str:curso_codigo>/inserir_professores/', InserirProfessoresCursoView.as_view(), name='inserir_professores_curso'),
     path('curso/<str:curso_codigo>/semestres/<str:semestre_codigo>/preencher_alunos_pendentes/', PreencherAlunosPendentesView.as_view(), name='preencher_alunos_pendentes'),
+    path('curso/<str:curso_codigo>/semestres/<str:semestre_codigo>/preencher_turmas/', PreencherTurmasView.as_view(), name='preencher_turmas'),
+    path('curso/<int:curso_codigo>/semestres/<int:semestre_codigo>/escolher_professores/', EscolherProfessoresView.as_view(), name='escolher_professores'),
+    path('curso/<str:curso_codigo>/semestres/<str:semestre_codigo>/preencher_alunos_matriculados/', PreencherAlunosMatriculadosView.as_view(), name='preencher_alunos_matriculados'),
 ]

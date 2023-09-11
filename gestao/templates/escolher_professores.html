@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Escolher Professores</title>
+</head>
+<body>
+    <h1>Escolher Professores para as Turmas</h1>
+    {% load custom_filters %}
+    <form method="post">
+        {% csrf_token %}
+        <ul>
+            {% for turma in turmas %}
+                <li>
+                    {{ turma.disciplina_semestre.disciplina.nome }} - Turma {{ turma.pk }}:
+                    <select name="professor_{{ turma.pk }}">
+                        <option value="">-- Escolha um professor --</option>
+                        {% for professor in professores %}
+                            <option value="{{ professor.pk }}"
+                                {% if professores_turmas and professores_turmas|get_item:turma.pk == professor.pk %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ professor.nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Salvar</button>
+    </form>
+    
+    
+
+    <a href="{% url 'preencher_disciplinas' curso.codigo semestre.codigo %}">Voltar para detalhes do semestre</a>
+</body>
+</html>

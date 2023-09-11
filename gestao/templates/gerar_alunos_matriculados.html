@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Preencher Alunos Matriculados</title>
+</head>
+<body>
+    <h1>Preencher Alunos Matriculados</h1>
+
+    <form method="post">
+        {% load custom_tags %}
+        {% csrf_token %}
+        <table>
+            {% for turma in turmas %}
+            <tr>
+                <td>Turma: {{ turma.disciplina_semestre.disciplina.nome }}</td>
+                <td>Professor: {{ turma.professor.nome }}</td>
+                <td>
+                    {{ forms|get_item:turma.pk }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Salvar</button>
+    </form>
+
+    <a href="{% url 'preencher_disciplinas' curso_codigo semestre_codigo %}">Voltar para a lista de semestres</a>
+</body>
+</html>

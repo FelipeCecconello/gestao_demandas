@@ -18,6 +18,14 @@ class Aluno(models.Model):
 
     def __str__(self):
         return self.nome
+    
+class Professor(models.Model):
+    codigo = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=100)
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.nome
 
 # Modelo Disciplina
 class Disciplina(models.Model):
@@ -53,4 +61,20 @@ class AlunosPendentes(models.Model):
     disciplina_semestre = models.ForeignKey(DisciplinasSemestre, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.disciplina_semestre.disciplina.nome}º Semestre - {self.aluno.nome}"
+        return f"{self.disciplina_semestre.semestre.numero} Semestre - {self.aluno.nome}"
+    
+class Turma(models.Model):
+    codigo = models.AutoField(primary_key=True)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, null=True)
+    disciplina_semestre = models.ForeignKey(DisciplinasSemestre, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"{self.disciplina_semestre.semestre.numero} Semestre - {self.disciplina_semestre.disciplina.nome}"
+    
+class AlunosMatriculados(models.Model):
+    codigo = models.AutoField(primary_key=True)
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.turma} - {self.aluno.nome}"
