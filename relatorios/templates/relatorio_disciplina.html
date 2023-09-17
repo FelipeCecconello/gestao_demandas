@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Relatório da Disciplina: {{ disciplina_semestre.disciplina.nome }}</title>
+</head>
+<body>
+    <h1>Relatório da Disciplina: {{ disciplina_semestre.disciplina.nome }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Matrícula</th>
+                <th>Nome do Aluno</th>
+                <th>Situação</th>
+                <th>Situação Geral</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for aluno in relatorio_data %}
+                <tr>
+                    <td>{{ aluno.matricula }}</td>
+                    <td>{{ aluno.nome }}</td>
+                    <td>{{ aluno.situacao }}</td>
+                    <td>{{ aluno.situacao_geral }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">Nenhum aluno encontrado para esta disciplina.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <li>
+        <a href="{% url 'lista_relatorios_disciplinas' semestre_id %}"> Voltar </a>
+    </li>
+</body>
+</html>

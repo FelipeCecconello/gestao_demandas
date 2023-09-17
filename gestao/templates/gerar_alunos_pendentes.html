@@ -6,22 +6,18 @@
 <body>
     <h1>Preencher Alunos Pendentes</h1>
 
-    <form method="post">
-        {% load custom_tags %}
-        {% csrf_token %}
-        <table>
-            {% for disciplina_semestre in disciplinas_semestre %}
-            <tr>
-                <td>{{ disciplina_semestre.disciplina.nome }}</td>
-                <td>
-                    {{ forms|get_item:disciplina_semestre.pk }}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-        <button type="submit">Salvar</button>
-    </form>
+    {% if success_message %}
+    <p>{{ success_message }}</p>
+    {% endif %}
 
-    <a href="{% url 'lista_semestres' curso_codigo %}">Voltar para a lista de semestres</a>
+    <form method="post">
+        {% csrf_token %}
+        {% for disciplina in alunos_pendentes %}
+        <h2>{{ disciplina.nome_disciplina }}</h2>
+        <label for="matriculas_disciplina_{{ disciplina.codigo }}">Matrículas dos Alunos (uma por linha):</label><br>
+        <textarea id="matriculas_disciplina_{{ disciplina.codigo }}" name="matriculas_disciplina_{{ disciplina.disciplina.codigo }}" rows="5" cols="50">{{ disciplina.matriculas }}</textarea><br><br>
+        {% endfor %}
+        <input type="submit" value="Enviar">
+    </form>
 </body>
 </html>

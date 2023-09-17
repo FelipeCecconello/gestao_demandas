@@ -64,53 +64,56 @@ class PreencherDisciplinasSemestreView(View):
         return render(request, self.template_name, context)
 
 class PreencherAlunosPendentesView(View):
-    template_name = 'gerar_alunos_pendentes.html'
+    template_name = 'gerar_alunos_pendentes.html'  # Defina o nome do seu template HTML
 
-    def get(self, request, curso_codigo, semestre_codigo):
-        # Recupere o semestre com base no código fornecido
-        semestre = Semestre.objects.get(curso__codigo=curso_codigo, codigo=semestre_codigo)
+    def get(self, request, semestre_codigo, curso_codigo):
+        # Obtenha o código do semestre e do curso a partir dos parâmetros da URL
+        codigo_semestre = semestre_codigo
+        codigo_curso = curso_codigo
 
-        # Recupere as disciplinas associadas a este semestre
-        disciplinas_semestre = DisciplinasSemestre.objects.filter(semestre=semestre)
+        # Obtenha as disciplinas do semestre e do curso específicos
+        disciplinas_semestre = DisciplinasSemestre.objects.filter(
+            semestre__codigo=codigo_semestre,
+            semestre__curso__codigo=codigo_curso
+        )
 
-        # Crie um dicionário para armazenar os formulários para cada disciplina
-        forms = {}
+        alunos_pendentes = []
+
+        # Para cada disciplina do semestre, crie um dicionário para o formulário
         for disciplina_semestre in disciplinas_semestre:
-            # Use a disciplina_semestre como chave e o formulário como valor
-            forms[disciplina_semestre.pk] = AlunosPendentesForm()
+            disciplina = disciplina_semestre
+            alunos_pendentes.append({
+                'disciplina': disciplina,
+                'matriculas': '', 
+                'nome_disciplina': disciplina.disciplina.nome # Este é o campo de entrada para matrículas dos alunos
+            })
 
         context = {
-            'curso_codigo': curso_codigo,
-            'semestre_codigo': semestre_codigo,
-            'forms': forms,
-            'disciplinas_semestre': disciplinas_semestre,
+            'alunos_pendentes': alunos_pendentes,
         }
+
         return render(request, self.template_name, context)
 
-    def post(self, request, curso_codigo, semestre_codigo):
-        # Recupere o semestre com base no código fornecido
-        semestre = Semestre.objects.get(curso__codigo=curso_codigo, codigo=semestre_codigo)
+    def post(self, request, semestre_codigo, curso_codigo):
 
-        # Recupere as disciplinas associadas a este semestre
-        disciplinas_semestre = DisciplinasSemestre.objects.filter(semestre=semestre)
-
-        AlunosPendentes.objects.filter(disciplina_semestre__in=disciplinas_semestre).delete()
-
-        # Processar os formulários postados
-        for disciplina_semestre in disciplinas_semestre:
-            form = AlunosPendentesForm(request.POST)
-            if form.is_valid():
-                matriculas = form.cleaned_data['matriculas'].split('\n')
+        AlunosPendentes.objects.filter(disciplina_semestre__semestre__codigo=semestre_codigo).delete()
+        
+        # Processar o formulário enviado e preencher a model AlunosPendentes
+        for key, value in request.POST.items():
+            if key.startswith('matriculas_disciplina_'):
+                disciplina_codigo = key.split('_')[-1]
+                disciplina = DisciplinasSemestre.objects.get(codigo=disciplina_codigo)
+                matriculas = value.split('\n')  # Divide as matrículas em linhas
                 for matricula in matriculas:
-                    matricula = matricula.strip()  # Remova espaços em branco
-                    if matricula:
-                        aluno, created = Aluno.objects.get_or_create(matricula=matricula)
-                        AlunosPendentes.objects.get_or_create(
-                            aluno=aluno,
-                            disciplina_semestre=disciplina_semestre
+                    matricula = matricula.replace('\r', '')
+                    if matricula.strip():  # Verifica se a matrícula não está em branco
+                        aluno_pendente = AlunosPendentes(
+                            aluno=Aluno.objects.get(matricula=matricula),
+                            disciplina_semestre=disciplina
                         )
+                        aluno_pendente.save()
 
-        return redirect('lista_semestres', curso_codigo=curso_codigo)
+        return redirect('preencher_disciplinas', curso_codigo, semestre_codigo)
     
 class CriarSemestreView(View):
     template_name = 'criar_semestre.html'
@@ -179,8 +182,8 @@ class InserirDisciplinasCursoView(View):
 
             # Processar a lista de alunos e criar registros de Aluno com base na lista
             for linha in lista_disciplinas.split('\n'):
-                if linha:
-                    Disciplina.objects.create(nome=linha, curso=curso)
+                nome, numero_semestre = linha.strip().split(',')
+                Disciplina.objects.create(nome=nome, numero_semestre=numero_semestre, curso=curso)
 
         return redirect('detalhes_curso', curso_codigo=curso.codigo)
     
@@ -280,51 +283,59 @@ class EscolherProfessoresView(View):
         return redirect('preencher_disciplinas', curso_codigo, semestre_codigo)
 
 class PreencherAlunosMatriculadosView(View):
-    template_name = 'gerar_alunos_matriculados.html'
+    template_name = 'gerar_alunos_matriculados.html'  # Defina o nome do seu template HTML
 
     def get(self, request, curso_codigo, semestre_codigo):
-        # Recupere o semestre com base no código fornecido
+        try:
+            curso = Curso.objects.get(codigo=curso_codigo)
+            semestre = Semestre.objects.get(codigo=semestre_codigo, curso=curso)
+        except Curso.DoesNotExist or Semestre.DoesNotExist:
+            # Lide com a situação em que o curso ou semestre não existe
+            # Por exemplo, redirecione para uma página de erro.
+            return render(request, 'erro.html', {'mensagem': 'Curso ou semestre não existe.'})
 
-        semestre = Semestre.objects.get(curso__codigo=curso_codigo, codigo=semestre_codigo)
-
-        # Recupere as disciplinas associadas a este semestre
+        # Obtém todas as turmas do semestre
         turmas = Turma.objects.filter(disciplina_semestre__semestre=semestre)
 
-        # Crie um dicionário para armazenar os formulários para cada disciplina
-        forms = {}
-        for turma in turmas:
-            # Use a disciplina_semestre como chave e o formulário como valor
-            forms[turma.pk] = AlunosMatriculadosForm()
-
         context = {
-            'curso_codigo': curso_codigo,
-            'semestre_codigo': semestre_codigo,
-            'forms': forms,
             'turmas': turmas,
         }
+
         return render(request, self.template_name, context)
 
     def post(self, request, curso_codigo, semestre_codigo):
-        # Recupere o semestre com base no código fornecido
-        semestre = Semestre.objects.get(curso__codigo=curso_codigo, codigo=semestre_codigo)
+        semestre = get_object_or_404(Semestre, codigo=semestre_codigo)
+        curso = get_object_or_404(Curso, codigo=curso_codigo)
+        outro_curso = Curso.objects.get(codigo=4)
 
-        # Recupere as disciplinas associadas a este semestre
-        turmas = Turma.objects.filter(disciplina_semestre__semestre=semestre)
+        AlunosMatriculados.objects.filter(turma__disciplina_semestre__semestre=semestre).delete()
+        
+        for key, value in request.POST.items():
+            if key.startswith('matriculas_turma_'):
+                turma_codigo = key.split('_')[-1]
+                turma = Turma.objects.get(codigo=turma_codigo)
+                matriculas = value.split('\n')
 
-        AlunosMatriculados.objects.filter(turma__in=turmas).delete()
-
-        # Processar os formulários postados
-        for turma in turmas:
-            form = AlunosMatriculadosForm(request.POST)
-            if form.is_valid():
-                matriculas = form.cleaned_data['matriculas'].split('\n')
                 for matricula in matriculas:
-                    matricula = matricula.strip()  # Remova espaços em branco
+                    matricula = matricula.replace('\r', '').strip()
+
                     if matricula:
-                        aluno, created = Aluno.objects.get_or_create(matricula=matricula)
-                        AlunosMatriculados.objects.get_or_create(
+                        # Tenta encontrar o aluno com a matrícula fornecida
+                        aluno = Aluno.objects.filter(matricula=matricula).first()
+
+                        if not aluno:
+                            # Se o aluno não existe, cria um novo aluno
+                            aluno = Aluno.objects.create(
+                                matricula=matricula,
+                                nome='',  # Deixe o nome em branco
+                                email='',  # Deixe o email em branco
+                                curso=outro_curso  # Atribui o curso com base no código fornecido
+                            )
+
+                        aluno_matriculado = AlunosMatriculados(
                             aluno=aluno,
                             turma=turma
                         )
+                        aluno_matriculado.save()
 
-        return redirect('preencher_disciplinas', curso_codigo=curso_codigo, semestre_codigo=semestre_codigo)
+        return redirect('preencher_disciplinas', curso_codigo, semestre_codigo)

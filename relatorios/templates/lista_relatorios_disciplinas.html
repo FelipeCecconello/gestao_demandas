@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Disciplinas do Semestre {{ semestre }}</title>
+</head>
+<body>
+    <h1>Disciplinas do Semestre {{ semestre }}</h1>
+    <ul>
+        {% for disciplina_semestre in disciplinas_semestre %}
+            <li>
+                <a href="{% url 'gerar_relatorio_disciplina' semestre_id disciplina_semestre.codigo %}">{{ disciplina_semestre.disciplina.nome }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhuma disciplina encontrada para este semestre.</li>
+        {% endfor %}
+        </br></br></br>
+        <a href="{% url 'relatorio_semestre' semestre_id %}">Relatorio Geral</a>
+        <a href="{% url 'lista_semestres' %}">Voltar para Lista de Semestres</a>
+    </ul>
+</body>
+</html>

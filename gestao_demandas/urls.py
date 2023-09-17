@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from gestao.views import *
+from relatorios.views import relatorio_semestre, lista_relatorios, lista_relatorios_disciplinas, gerar_relatorio_disciplina
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,4 +33,8 @@ urlpatterns = [
     path('curso/<str:curso_codigo>/semestres/<str:semestre_codigo>/preencher_turmas/', PreencherTurmasView.as_view(), name='preencher_turmas'),
     path('curso/<int:curso_codigo>/semestres/<int:semestre_codigo>/escolher_professores/', EscolherProfessoresView.as_view(), name='escolher_professores'),
     path('curso/<str:curso_codigo>/semestres/<str:semestre_codigo>/preencher_alunos_matriculados/', PreencherAlunosMatriculadosView.as_view(), name='preencher_alunos_matriculados'),
+    path('relatorios/<int:semestre_id>/relatorio_geral/', relatorio_semestre, name='relatorio_semestre'),
+    path('relatorios/', lista_relatorios, name='lista_semestres'),
+    path('relatorios/<int:semestre_id>/', lista_relatorios_disciplinas, name='lista_relatorios_disciplinas'),
+    path('relatorios/<int:semestre_id>/<int:disciplina_semestre_codigo>/', gerar_relatorio_disciplina, name='gerar_relatorio_disciplina'),
 ]

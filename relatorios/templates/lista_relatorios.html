@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Semestres de SI</title>
+</head>
+<body>
+    <h1>Lista de Semestres de SI</h1>
+    <ul>
+        {% for semestre in semestres_si %}
+            <li>
+                <a href="{% url 'lista_relatorios_disciplinas' semestre.codigo %}">{{ semestre }}</a>
+            </li>
+        {% empty %}
+            <li>Nenhum semestre encontrado para o curso de SI.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

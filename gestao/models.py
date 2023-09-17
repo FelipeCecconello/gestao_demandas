@@ -31,10 +31,11 @@ class Professor(models.Model):
 class Disciplina(models.Model):
     codigo = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=100)
+    numero_semestre = models.PositiveIntegerField()
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.nome
+        return f"{self.nome} - {self.numero_semestre}º Semestre"
 
 # Modelo Semestre
 class Semestre(models.Model):
@@ -52,7 +53,7 @@ class DisciplinasSemestre(models.Model):
     disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
     
     def __str__(self):
-        return f"{self.semestre.numero}º Semestre - {self.disciplina.nome}"
+        return f"{self.semestre.numero}º Semestre - {self.disciplina.nome} - Codigo: {self.codigo}"
 
 # Modelo AlunosPendentes
 class AlunosPendentes(models.Model):
@@ -61,16 +62,13 @@ class AlunosPendentes(models.Model):
     disciplina_semestre = models.ForeignKey(DisciplinasSemestre, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.disciplina_semestre.semestre.numero} Semestre - {self.aluno.nome}"
+        return f"{self.disciplina_semestre.semestre.numero} Semestre - {self.aluno.nome} - {self.disciplina_semestre.disciplina.nome}"
     
 class Turma(models.Model):
     codigo = models.AutoField(primary_key=True)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, null=True)
-    disciplina_semestre = models.ForeignKey(DisciplinasSemestre, on_delete=models.SET_NULL, null=True)
+    disciplina_semestre = models.ForeignKey(DisciplinasSemestre, on_delete=models.CASCADE, null=True)
 
-    def __str__(self):
-        return f"{self.disciplina_semestre.semestre.numero} Semestre - {self.disciplina_semestre.disciplina.nome}"
-    
 class AlunosMatriculados(models.Model):
     codigo = models.AutoField(primary_key=True)
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)

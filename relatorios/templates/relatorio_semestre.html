@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Relatório do Semestre {{ semestre.numero }}</title>
+</head>
+<body>
+    <h1>Relatório do Semestre {{ semestre.numero }}</h1>
+
+    <div class="container">
+        {{ relatorio_html | safe }}
+    </div>
+</body>
+</html>
