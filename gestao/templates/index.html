@@ -1,0 +1,14 @@
+{% extends 'seu_template.html' %}
+
+{% block content %}
+    <h2>PAGINA INICIAL</h2>
+    <ul>
+        <a href="{% url 'detalhes_curso' curso.codigo %}">
+            Gestão do curso
+        </a>
+        </br>
+        <a href="/relatorios">
+            Relatórios
+        </a>
+    </ul>
+{% endblock %}

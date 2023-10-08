@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
 from django.forms import modelformset_factory
 from django.views.generic.edit import CreateView
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import *
 from .forms import *
@@ -107,8 +108,26 @@ class PreencherAlunosPendentesView(View):
                 for matricula in matriculas:
                     matricula = matricula.replace('\r', '')
                     if matricula.strip():  # Verifica se a matrícula não está em branco
+                        codigo_curso = matricula[4:9]  # Obtém o código do curso da matrícula
+                        try:
+                            aluno = Aluno.objects.get(matricula=matricula)
+                        except ObjectDoesNotExist:
+                            
+                            # Adiciona o novo aluno ao curso com base no código do curso
+                            if codigo_curso == '11316':
+                                curso = Curso.objects.get(pk=1)  # PK do curso com código 11316
+                            else:
+                                curso = Curso.objects.get(pk=4)  # PK do curso com outro código
+                            # Se o aluno não existe, cria um novo com matrícula, nome e email em branco
+                            aluno = Aluno.objects.create(
+                                matricula=matricula,
+                                nome='',
+                                email='',
+                                curso = curso
+                            )
+
                         aluno_pendente = AlunosPendentes(
-                            aluno=Aluno.objects.get(matricula=matricula),
+                            aluno=aluno,
                             disciplina_semestre=disciplina
                         )
                         aluno_pendente.save()
@@ -339,3 +358,8 @@ class PreencherAlunosMatriculadosView(View):
                         aluno_matriculado.save()
 
         return redirect('preencher_disciplinas', curso_codigo, semestre_codigo)
+    
+def index(request):
+    curso = Curso.objects.get(pk=1)
+
+    return render(request, 'index.html', {'curso': curso})

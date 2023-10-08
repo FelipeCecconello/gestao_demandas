@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from gestao.views import *
 from relatorios.views import relatorio_semestre, lista_relatorios, lista_relatorios_disciplinas, gerar_relatorio_disciplina
+app_name = 'relatorios'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', index, name='index'),
     path('curso/<str:curso_codigo>/semestres/criar/', CriarSemestreView.as_view(), name='criar_semestre'),
     path('curso/<str:curso_codigo>/semestres/', ListaSemestresView.as_view(), name='lista_semestres'),
     path('curso/<str:curso_codigo>/semestres/<str:semestre_codigo>/preencher_disciplinas/', PreencherDisciplinasSemestreView.as_view(), name='preencher_disciplinas'),

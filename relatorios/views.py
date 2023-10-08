@@ -2,20 +2,30 @@
 from django.shortcuts import render, get_object_or_404
 from gestao.models import Semestre, Curso, DisciplinasSemestre, AlunosPendentes, AlunosMatriculados
 from .relatorios import gerar_relatorio
+from django.http import HttpResponse
+import pandas as pd
 
 def relatorio_semestre(request, semestre_id):
     semestre = Semestre.objects.get(pk=semestre_id)
     df = gerar_relatorio(semestre_id)
 
-    # Converter o DataFrame em HTML para renderização no template
-    relatorio_html = df.to_html(classes='table table-bordered table-striped')
+    # Determinar o formato de saída com base no parâmetro "format" na URL
+    output_format = request.GET.get('format')
 
-    context = {
-        'semestre': semestre,
-        'relatorio_html': relatorio_html,
-    }
-
-    return render(request, 'relatorio_semestre.html', context)
+    if output_format == 'excel':
+        # Exportar para Excel
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = f'attachment; filename=relatorio_semestre_{semestre_id}.xlsx'
+        df.to_excel(response, index=True)
+        return response
+    else:
+        # Renderizar na tela
+        relatorio_html = df.to_html(classes='table table-bordered table-striped')
+        context = {
+            'semestre': semestre,
+            'relatorio_html': relatorio_html,
+        }
+        return render(request, 'relatorio_semestre.html', context)
 
 def lista_relatorios(request):
     # Filtrar os semestres do curso de SI

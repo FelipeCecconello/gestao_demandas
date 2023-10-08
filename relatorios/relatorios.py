@@ -39,7 +39,11 @@ def gerar_relatorio(semestre_id):
         total_matriculados_disciplina = sum(relatorio_data[(disciplina_nome, numero_semestre)].get((str(ano_matricula), 'Matriculados'), 0) for ano_matricula in range(2010, 2030))
         relatorio_data[(disciplina_nome, numero_semestre)][('Total', 'Pendentes')] = total_pendentes_disciplina
         relatorio_data[(disciplina_nome, numero_semestre)][('Total', 'Matriculados')] = total_matriculados_disciplina
-        relatorio_data[(disciplina_nome, numero_semestre)][('Total', 'Porcentagem')] = f"{round((total_matriculados_disciplina / total_pendentes_disciplina) * 100)}%"
+
+        if (total_pendentes_disciplina == 0 or total_matriculados_disciplina == 0):
+            relatorio_data[(disciplina_nome, numero_semestre)][('Total', 'Porcentagem')] = f"0"
+        else:
+            relatorio_data[(disciplina_nome, numero_semestre)][('Total', 'Porcentagem')] = f"{round((total_matriculados_disciplina / total_pendentes_disciplina) * 100)}%"
 
         # Calcular o número de alunos do curso de SI e de outros cursos para esta disciplina semestre
         curso_si = Curso.objects.get(pk=1)

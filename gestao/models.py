@@ -64,11 +64,14 @@ class AlunosPendentes(models.Model):
     def __str__(self):
         return f"{self.disciplina_semestre.semestre.numero} Semestre - {self.aluno.nome} - {self.disciplina_semestre.disciplina.nome}"
     
+# Modelo Turma   
 class Turma(models.Model):
     codigo = models.AutoField(primary_key=True)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, null=True)
     disciplina_semestre = models.ForeignKey(DisciplinasSemestre, on_delete=models.CASCADE, null=True)
 
+
+#Modelo AlunosMatriculados
 class AlunosMatriculados(models.Model):
     codigo = models.AutoField(primary_key=True)
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
